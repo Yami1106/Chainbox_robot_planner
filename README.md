@@ -1,51 +1,61 @@
 <div align="center">
 
-<pre>
-╔════════════════════════════════╗
-║     🔗  Chainbox_robot_planner  🔗     ║
-╚════════════════════════════════╝
-</pre>
+# Chainbox Robot — Sampling-Based Motion Planner
 
-## Chainbox Robot Motion Planner
+[![C++](https://img.shields.io/badge/C++-00599C?style=for-the-badge&logo=cplusplus&logoColor=white)](https://isocpp.org)
+[![OMPL](https://img.shields.io/badge/OMPL-Motion_Planning-orange?style=for-the-badge)](https://ompl.kavrakilab.org)
 
-![C++](https://img.shields.io/badge/C++-00599C?style=flat&logo=cplusplus&logoColor=white) ![Python](https://img.shields.io/badge/Python-3776AB?style=flat&logo=python&logoColor=white)
+*Planning collision-free motion for a 7-DOF chain-box robot in ℝ²×S¹×S⁴ configuration space — with self-collision detection and PRM\* clearance optimisation.*
 
 </div>
 
 ---
 
-## About
+## The robot
 
-A motion planning system for a **chain-link robot** configuration, computing collision-free paths through constrained workspaces. Implements sampling-based planners optimised for chain kinematics.
+A **chain-box robot** — a chain of rigid links with a box at the end — operating in a 7-dimensional configuration space:
 
----
+```
+State: (x, y, θ, q₀, q₁, q₂, q₃)  ∈  ℝ² × S¹ × S⁴
+```
 
-## Features
-
-- Sampling-based planning (RRT / PRM)
-- Chain-link kinematic model
-- Collision detection in configuration space
-- Visualization of planned paths
+The mixed topology (Euclidean + circular) makes standard Euclidean planners insufficient — requiring careful distance metrics and boundary handling.
 
 ---
 
-## Tech Stack
+## Implementation
 
-**C++** · **Makefile** · **Python**
+### Custom validity checker
+- Full **self-collision detection** between all link pairs
+- Constraint: no two links of the chain may intersect each other
+- Handles the compound geometry of boxes + connecting segments
 
----
+### Scenarios
 
-## Tags
-
-`Motion Planning`  `Robotics`  `Kinematics`
-
----
-
-## Author
-
-**Ashish (Yami1106)**
-[GitHub](https://github.com/Yami1106) · [Portfolio](https://yamiportfolio.netlify.app/)
+| Scenario | Planner | Config | Solve time |
+|---|---|---|---|
+| Narrow passage | RRTConnect | range = 0.9728 | ~20 s |
+| Maximum clearance | PRM* | Clearance objective | — |
 
 ---
 
-*Generated with [Automate_contribution](https://github.com/Yami1106/Automate_contribution)*
+## Sampling strategy benchmark (PRM)
+
+| Strategy | Behaviour |
+|---|---|
+| Uniform | Baseline, struggles in narrow passages |
+| Gaussian | Biases samples near obstacle boundaries |
+| Obstacle-Based | Concentrates in difficult regions |
+| Bridge Test | Best for narrow corridors |
+
+---
+
+## Tech stack
+
+`C++` · `OMPL` · `CMake`
+
+---
+
+<div align="center">
+WPI Motion Planning (RBE 550) · <a href="https://github.com/Yami1106">Ashish Sukumar</a>
+</div>
